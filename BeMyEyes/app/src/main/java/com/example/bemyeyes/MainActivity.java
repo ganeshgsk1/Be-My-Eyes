@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +30,7 @@ import java.io.ObjectOutputStream;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
+TextView textView = findViewById(R.id.textView);
     File file;
     String filename;
     FileOutputStream fos = null;
@@ -42,6 +46,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
+
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                //pic = f;
+
+                startActivityForResult(intent, 1);
+
+            }
+        });
+
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         tts=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -71,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Press.TAG","ACTION_DOWN");
 
                 break;
+
             case MotionEvent.ACTION_UP:
                 if(scheduled == false){
                     scheduled = true;
